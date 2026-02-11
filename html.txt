@@ -1,0 +1,394 @@
+
+# ساخت کد HTML کامل کاتالوگ تعاملی
+html_code = '''<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>کاتالوگ دیجیتال - RAYABARTAR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a1a;
+            overflow: hidden;
+            touch-action: none;
+        }
+        
+        .catalog-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        .page.active {
+            display: block;
+            opacity: 1;
+        }
+        
+        /* دکمه‌های تعاملی */
+        .btn {
+            position: absolute;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: transparent;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+            filter: brightness(1.2);
+        }
+        
+        .btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* استایل دکمه شروع صفحه 1 */
+        .btn-start {
+            bottom: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 60px;
+            background: linear-gradient(135deg, #4a9b8e 0%, #2c7a6b 100%);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        .btn-start:hover {
+            box-shadow: 0 6px 20px rgba(74, 155, 142, 0.5);
+        }
+        
+        /* دکمه‌های منوی صفحه 2 */
+        .menu-btn {
+            width: 80%;
+            height: 60px;
+            left: 10%;
+            background: rgba(255,255,255,0.9);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #333;
+            margin: 10px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .menu-btn:hover {
+            background: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        /* موقعیت دکمه‌های صفحه 2 */
+        .btn-moqademe { top: 30%; }
+        .btn-mahsoolat { top: 42%; }
+        .btn-forooshgah { top: 54%; }
+        .btn-contact { top: 66%; }
+        
+        /* دکمه HOME */
+        .btn-home {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 80px;
+            height: 40px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #333;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .btn-home:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+        
+        /* دکمه‌های محصولات صفحه 4 */
+        .product-btn {
+            width: 45%;
+            height: 80px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #2c5f2d;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+        }
+        
+        .product-btn:hover {
+            background: white;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.25);
+        }
+        
+        /* موقعیت دکمه‌های محصولات */
+        .btn-zed-rizesh { top: 35%; right: 5%; }
+        .btn-dd-cream { top: 35%; left: 5%; }
+        .btn-damnoosh { top: 50%; right: 5%; }
+        .btn-zed-cheroak { top: 50%; left: 5%; }
+        .btn-moo-bar { top: 65%; right: 5%; }
+        .btn-ahya-tirgi { top: 65%; left: 5%; }
+        
+        /* انیمیشن لودینگ */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .page.active {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        /* ریسپانسیو */
+        @media (max-width: 480px) {
+            .btn-start {
+                width: 160px;
+                height: 50px;
+                font-size: 20px;
+            }
+            .menu-btn {
+                height: 50px;
+                font-size: 18px;
+            }
+            .product-btn {
+                height: 70px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="catalog-container">
+        
+        <!-- صفحه 1: صفحه اصلی -->
+        <div class="page active" id="page1" style="background: linear-gradient(135deg, #1e3c2f 0%, #2d5a4a 100%);">
+            <div style="text-align: center; padding-top: 20%;">
+                <h1 style="color: white; font-size: 36px; margin-bottom: 10px;">RAYABARTAR</h1>
+                <h2 style="color: #4a9b8e; font-size: 24px;">1TA100</h2>
+                <p style="color: #ccc; margin-top: 20px;">Cosmetics, health and treatment</p>
+                <p style="color: #888; margin-top: 10px;">WWW.1TA100.IR</p>
+            </div>
+            <button class="btn btn-start" onclick="goToPage(2)">شروع</button>
+        </div>
+        
+        <!-- صفحه 2: منوی اصلی -->
+        <div class="page" id="page2" style="background: linear-gradient(180deg, #f5f5f5 0%, #e0e0e0 100%);">
+            <div style="text-align: center; padding-top: 15%;">
+                <h2 style="color: #2c5f2d; font-size: 28px; margin-bottom: 30px;">RAYABARTAR 1TA100</h2>
+            </div>
+            <button class="btn menu-btn btn-moqademe" onclick="goToPage(3)">مقدمه</button>
+            <button class="btn menu-btn btn-mahsoolat" onclick="goToPage(4)">محصولات</button>
+            <button class="btn menu-btn btn-forooshgah" onclick="goToPage(11)">فروشگاه</button>
+            <button class="btn menu-btn btn-contact" onclick="goToPage(12)">ارتباط با ما</button>
+        </div>
+        
+        <!-- صفحه 3: مقدمه -->
+        <div class="page" id="page3" style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);">
+            <div style="padding: 20% 10%;">
+                <h2 style="color: #2c5f2d; font-size: 32px; margin-bottom: 20px;">مقدمه</h2>
+                <p style="color: #555; font-size: 18px; line-height: 1.8;">
+                    شرکت رایابرتر 1تا100 با هدف ارائه محصولات با کیفیت در حوزه آرایشی، بهداشتی و درمانی فعالیت می‌کند.
+                </p>
+            </div>
+            <button class="btn btn-home" onclick="goToPage(2)">HOME</button>
+        </div>
+        
+        <!-- صفحه 4: محصولات -->
+        <div class="page" id="page4" style="background: linear-gradient(180deg, #f0f8f0 0%, #e0f0e0 100%);">
+            <div style="text-align: center; padding-top: 10%;">
+                <h2 style="color: #2c5f2d; font-size: 28px;">محصولات</h2>
+                <p style="color: #666; margin-top: 10px;">ArOPAk</p>
+            </div>
+            <button class="btn product-btn btn-zed-rizesh" onclick="goToPage(5)">شامپو ضد ریزش</button>
+            <button class="btn product-btn btn-dd-cream" onclick="goToPage(6)">دی دی کرم</button>
+            <button class="btn product-btn btn-damnoosh" onclick="goToPage(7)">دمنوش لاغری سحر</button>
+            <button class="btn product-btn btn-zed-cheroak" onclick="goToPage(8)">کرم ضد چروک</button>
+            <button class="btn product-btn btn-moo-bar" onclick="goToPage(9)">کرم موبر</button>
+            <button class="btn product-btn btn-ahya-tirgi" onclick="goToPage(10)">شامپو احیا تیرگی</button>
+            <button class="btn btn-home" onclick="goToPage(2)">HOME</button>
+        </div>
+        
+        <!-- صفحه 5: شامپو ضد ریزش -->
+        <div class="page" id="page5" style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);">
+            <div style="padding: 15% 10%;">
+                <h2 style="color: #1565c0; font-size: 28px;">ORGANIC</h2>
+                <h3 style="color: #333; font-size: 24px; margin-top: 20px;">شامپو ضد ریزش</h3>
+                <p style="color: #555; margin-top: 20px; line-height: 1.8;">
+                    شامپویی طبیعی برای جلوگیری از ریزش مو و تقویت ریشه موها
+                </p>
+            </div>
+            <button class="btn btn-home" onclick="goToPage(2)">HOME</button>
+        </div>
+        
+        <!-- صفحه 6: دی دی کرم -->
+        <div class="page" id="page6" style="background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);">
+            <div style="padding: 15% 10%;">
+                <h2 style="color: #c2185b; font-size: 28px;">naloo</h2>
+                <h3 style="color: #333; font-size: 24px; margin-top: 20px;">دی دی کرم</h3>
+                <p style="color: #555; margin-top: 20px; line-height: 1.8;">
+                    کرم پوشاننده و مرطوب کننده با SPF مناسب
+                </p>
+            </div>
+            <button class="btn btn-home" onclick="goToPage(2)">HOME</button>
+        </div>
+        
+        <!-- صفحه 7: دمنوش لاغری -->
+        <div class="page" id="page7" style="background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);">
+            <div style="padding: 15% 10%;">
+                <h3 style="color: #e65100; font-size: 24px;">دمنوش لاغری سحر</h3>
+                <p style="color: #555; margin-top: 20px; line-height: 1.8;">
+                    دمنوش گیاهی برای کاهش وزن و تنظیم متابولیسم
+                </p>
+            </div>
+            <button class="btn btn-home" onclick="goToPage(2)">HOME</button>
+        </div>
+        
+        <!-- صفحه 8: کرم ضد چروک -->
+        <div class="page" id="page8" style="background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);">
+            <div style="padding: 15% 10%;">
+                <h2 style="color: #7b1fa2; font-size: 28px;">ArORAR</h2>
+                <h3 style="color: #333; font-size: 24px; margin-top: 20px;">کرم ضد چروک</h3>
+                <p style="color: #555; margin-top: 20px; line-height: 1.8;">
+                    کاهش دهنده چین و چروک و جوانساز پوست
+                </p>
+            </div>
+            <button class="btn btn-home" onclick="goToPage(2)">HOME</button>
+        </div>
+        
+        <!-- صفحه 9: کرم موبر -->
+        <div class="page" id="page9" style="background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);">
+            <div style="padding: 15% 10%;">
+                <h3 style="color: #00695c; font-size: 24px;">کرم موبر</h3>
+                <p style="color: #555; margin-top: 20px; line-height: 1.8;">
+                    موبر طبیعی بدون حساسیت برای پوست‌های حساس
+                </p>
+            </div>
+            <button class="btn btn-home" onclick="goToPage(2)">HOME</button>
+        </div>
+        
+        <!-- صفحه 10: شامپو احیا تیرگی -->
+        <div class="page" id="page10" style="background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);">
+            <div style="padding: 15% 10%;">
+                <h2 style="color: #303f9f; font-size: 28px;">APORAR</h2>
+                <h3 style="color: #333; font-size: 24px; margin-top: 20px;">شامپو احیا تیرگی</h3>
+                <p style="color: #555; margin-top: 20px; line-height: 1.8;">
+                    احیا کننده موهای آسیب دیده و رنگ داده شده
+                </p>
+            </div>
+            <button class="btn btn-home" onclick="goToPage(2)">HOME</button>
+        </div>
+        
+        <!-- صفحه 11: فروشگاه -->
+        <div class="page" id="page11" style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);">
+            <div style="padding: 15% 10%;">
+                <h2 style="color: #2c5f2d; font-size: 28px;">فروشگاه</h2>
+                <div style="margin-top: 30px;">
+                    <p style="color: #555; font-size: 18px; margin: 10px 0;">🛒 شامپو ضد ریزش</p>
+                    <p style="color: #555; font-size: 18px; margin: 10px 0;">🛒 دی دی کرم</p>
+                    <p style="color: #555; font-size: 18px; margin: 10px 0;">🛒 دمنوش لاغری سحر</p>
+                    <p style="color: #555; font-size: 18px; margin: 10px 0;">🛒 کرم ضد چروک</p>
+                    <p style="color: #555; font-size: 18px; margin: 10px 0;">🛒 کرم موبر</p>
+                    <p style="color: #555; font-size: 18px; margin: 10px 0;">🛒 شامپو احیا تیرگی</p>
+                </div>
+            </div>
+            <button class="btn btn-home" onclick="goToPage(2)">HOME</button>
+        </div>
+        
+        <!-- صفحه 12: ارتباط با ما -->
+        <div class="page" id="page12" style="background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);">
+            <div style="padding: 15% 10%;">
+                <h2 style="color: #f57f17; font-size: 28px;">ارتباط با ما</h2>
+                <div style="margin-top: 30px; color: #555; font-size: 16px; line-height: 2;">
+                    <p>📍 بلوار فردوس شرق، خیابان ابراهیمی شمالی</p>
+                    <p> بن‌بست الف، پلاک 1</p>
+                    <p>📞 021-44182030</p>
+                    <p>📞 021-44313050</p>
+                    <p>🌐 WWW.1TA100.IR</p>
+                </div>
+            </div>
+            <button class="btn btn-home" onclick="goToPage(2)">HOME</button>
+        </div>
+        
+    </div>
+    
+    <script>
+        let currentPage = 1;
+        
+        function goToPage(pageNum) {
+            // مخفی کردن صفحه فعلی
+            document.getElementById('page' + currentPage).classList.remove('active');
+            
+            // نمایش صفحه جدید
+            setTimeout(() => {
+                document.getElementById('page' + pageNum).classList.add('active');
+                currentPage = pageNum;
+            }, 100);
+        }
+        
+        // جلوگیری از زوم دو انگشتی
+        document.addEventListener('touchmove', function(e) {
+            if (e.scale !== 1) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+        
+        // جلوگیری از دابل تپ زوم
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(e) {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                e.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+    </script>
+</body>
+</html>'''
+
+# ذخیره فایل
+with open('/mnt/kimi/output/catalog_interactive.html', 'w', encoding='utf-8') as f:
+    f.write(html_code)
+
+print("✅ کاتالوگ تعاملی با موفقیت ساخته شد!")
+print("\n📁 فایل خروجی: catalog_interactive.html")
+print("\n🎯 ویژگی‌ها:")
+print("   • 12 صفحه کامل با ناوبری دکمه‌ای")
+print("   • افکت hover روی تمام دکمه‌ها")
+print("   • افکت click (فشار دادن)")
+print("   • Transition نرم بین صفحات")
+print("   • کاملاً ریسپانسیو برای موبایل")
+print("   • جلوگیری از اسکرول و زوم ناخواسته")
